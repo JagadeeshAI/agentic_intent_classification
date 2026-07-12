@@ -6,10 +6,15 @@ review — with **every one of those outputs explained from the model's own
 prediction** (not a black box), and every response stored into a growing
 knowledge base.
 
+> 🎬 **A screen recording of the whole thing working — `demo.webm` (project root)** —
+> shows the Streamlit UI: picking random example tickets, triaging, the four "why"
+> explanations, and the knowledge base growing.
+
 ## Project structure
 
 ```
 agentic/
+├── demo.webm                     🎬 screen recording of the working app
 ├── app.py                        entry point — Streamlit UI (or CLI); loads the
 │                                 checkpoint if present, trains ONLY if it's missing
 ├── checkpoint/                   (generated locally, not committed)
@@ -41,32 +46,65 @@ agentic/
 ## Setup
 
 ```bash
+# 1. Get the code
+git clone https://github.com/JagadeeshAI/agentic_intent_classification.git
+cd agentic_intent_classification
+
+# 2. (Recommended) create a virtual environment
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
-## Run
+No dataset download step is needed — Banking77 auto-downloads from Hugging Face on
+first run and is cached to `data/data.csv` (fully offline afterwards). No API keys.
+
+## Run — all commands
 
 Everything runs from the **project root**. The only command you need:
 
 ```bash
-streamlit run app.py    # web UI at localhost:8501
+streamlit run app.py             # 🎬 web UI at http://localhost:8501 (see demo.webm)
 # or
-python app.py           # terminal demo + interactive prompt
+python app.py                    # terminal demo + interactive prompt
 ```
 
 `app.py` checks `checkpoint/` first — if the trained pipeline exists it **loads it and
 does no training**; only on a missing checkpoint does it run the one-time 4-model
-training/comparison (the dataset auto-downloads on first run, so a fresh clone needs
-no manual data step).
+training/comparison (~10-20 min on CPU, once). On the very first prediction it also
+builds the explanation index (~1-2 min, once).
 
-Individual steps can also be run standalone (all from the project root):
+Every step can also be run standalone (all from the project root):
 
 ```bash
-python src/data.py             # dataset sanity checks (stats, ambiguity, split overlap)
-python -m src.classify         # force a full retrain + 4-model comparison
-python -m src.explainableAI    # explainability standalone demo
-python -m src.agent            # full agent pipeline on 6 random tickets (CLI)
+python src/data.py               # download/cache dataset + sanity checks
+                                 #   (class distribution, ambiguity, split-overlap)
+python -m src.classify           # force a full retrain: trains all 4 models, writes
+                                 #   results/ (reports, confusion matrices,
+                                 #   model_comparison.csv) + checkpoint/
+python -m src.explainableAI      # explainability standalone demo on 5 sample tickets
+python -m src.agent              # full agent pipeline on 6 random tickets (CLI),
+                                 #   stores responses to knowledge_base/
+python -m py_compile app.py src/*.py   # quick syntax check of all code
 ```
+
+To rebuild anything from scratch, delete its artifact and rerun:
+
+```bash
+rm -rf checkpoint/               # next run retrains the 4 models
+rm -f  checkpoint/explain_index.npz    # next prediction re-encodes the index
+rm -f  data/data.csv             # next run re-downloads Banking77
+rm -f  knowledge_base/knowledge_base.json   # start the case store empty
+```
+
+## Demo video
+
+**`demo.webm`** (project root) is a screen recording of the app in action: launching
+`streamlit run app.py`, picking one of the 6 randomly-drawn real tickets, triaging it,
+reading the four model-derived explanations (intent, confidence, priority, human
+review), and watching the knowledge base grow in the sidebar.
 
 ## Dataset
 

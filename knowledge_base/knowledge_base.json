@@ -1,3 +1,30 @@
 [
-  
+  {
+    "input_text": "What's the normal time frame for a transfer from a UK account? After just making a transfer it doesn't appear at all. I need to know if things went okay.",
+    "predicted_intent": "balance_not_updated_after_bank_transfer",
+    "predicted_label": "Balance not updated after bank transfer",
+    "confidence": 0.7679,
+    "confidence_explanation": "The model distributes probability across all 77 intents: 'Balance not updated after bank transfer' received 76.8%, the runner-up 'Transfer timing' received 9.4% \u2014 a clear-cut decision.",
+    "explanation": "Predicted 'Balance not updated after bank transfer' because this ticket's meaning is closest to real customer tickets the model learned from: 5 of the 5 most similar training tickets were labeled 'Balance not updated after bank transfer' (closest match similarity 1.00 out of 1.00).",
+    "priority": "Medium",
+    "priority_explanation": "Medium \u2014 no urgency evidence was found in the ticket or the predicted intent 'Balance not updated after bank transfer', but model confidence 76.8% is below 80%, so it is kept above Low pending a closer look.",
+    "recommended_action": "Route to the queue handling 'Balance not updated after bank transfer' for normal processing.",
+    "needs_human_review": false,
+    "human_review_reason": "No human review needed \u2014 the model's confidence 76.8% clears the 60% threshold and no High-priority evidence was found.",
+    "stored_at": "2026-07-12T14:40:35"
+  },
+  {
+    "input_text": "my card was stolen",
+    "predicted_intent": "lost_or_stolen_card",
+    "predicted_label": "Lost or stolen card",
+    "confidence": 0.6814,
+    "confidence_explanation": "The model distributes probability across all 77 intents: 'Lost or stolen card' received 68.1%, the runner-up 'Compromised card' received 5.1% \u2014 a clear-cut decision.",
+    "explanation": "Predicted 'Lost or stolen card' because this ticket's meaning is closest to real customer tickets the model learned from: 4 of the 5 most similar training tickets were labeled 'Lost or stolen card' (closest match similarity 1.00 out of 1.00).",
+    "priority": "High",
+    "priority_explanation": "High \u2014 the ticket itself contains the urgency term(s) ['stolen'] and the model predicted 'Lost or stolen card', whose meaning is security/loss-critical (['lost', 'stolen']).",
+    "recommended_action": "Escalate immediately to the team handling 'Lost or stolen card'.",
+    "needs_human_review": true,
+    "human_review_reason": "Needs human review because priority is High (the ticket itself contains the urgency term(s) ['stolen'] and the model predicted 'Lost or stolen card', whose meaning is security/loss-critical (['lost', 'stolen']).).",
+    "stored_at": "2026-07-12T14:45:17"
+  }
 ]
