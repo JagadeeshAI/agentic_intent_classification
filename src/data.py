@@ -1,20 +1,4 @@
-"""Data preparation for Banking77 intent classification.
 
-Real, MANUALLY-LABELED dataset: anonymized online banking customer service
-queries, annotated with intents by human annotators (Casanueva et al.,
-ACL NLP4ConvAI 2020 — "Efficient Intent Detection with Dual Sentence
-Encoders"). 13,083 examples, 77 intents. Uses the dataset's OFFICIAL
-train (10,003) / test (3,080) split — zero text overlap between splits.
-
-CACHING: on first run, downloads from Hugging Face and saves the full
-(train+test, with a `split` column) dataset to DATA_CSV_PATH. Every run
-after that loads directly from that local CSV — no network call, no
-re-download. Delete the CSV (or call load_prepared(force_download=True))
-to refresh from source.
-
-Requirements:
-    pip install datasets pandas scikit-learn
-"""
 import os
 import re
 import pandas as pd
@@ -22,19 +6,16 @@ import pandas as pd
 DATA_CSV_PATH = "data/data.csv"
 HF_DATASET = "mteb/banking77"
 
-PRIMARY_TARGET = "label_text"      # human-readable intent name (77 classes)
+PRIMARY_TARGET = "label_text"
 
-# Optional: cap examples per class for a smaller/faster dataset. None = full.
 SAMPLES_PER_CLASS = None
-
 
 def clean_text(s) -> str:
     """Collapse newlines/whitespace so the text field is one clean line."""
     return re.sub(r"\s+", " ", str(s)).strip()
 
-
 def _download_split(split: str) -> pd.DataFrame:
-    from datasets import load_dataset  # imported lazily — only needed on cache miss
+    from datasets import load_dataset
     ds = load_dataset(HF_DATASET, split=split)
     df = ds.to_pandas()
     df["text"] = df["text"].map(clean_text)
@@ -56,10 +37,6 @@ def _download_full() -> pd.DataFrame:
 
 
 def load_prepared(force_download: bool = False) -> pd.DataFrame:
-    """Return the full dataset (official train+test, with a `split` column).
-    Loads from DATA_CSV_PATH if it exists; otherwise downloads once and
-    caches it there. Set force_download=True to bypass the cache.
-    """
     if not force_download and os.path.exists(DATA_CSV_PATH):
         df = pd.read_csv(DATA_CSV_PATH)
     else:
@@ -81,13 +58,7 @@ def get_label_maps(df: pd.DataFrame, target: str = PRIMARY_TARGET):
 
 
 def load_splits(test_size=None, seed: int = 42, target: str = PRIMARY_TARGET):
-    """Banking77's OFFICIAL train/test split (loaded from the local cache,
-    downloading once on first run — see load_prepared). `test_size`/`seed`
-    kept in the signature for interface compatibility but ignored — this
-    dataset's own official split is used instead of a random re-split.
-    Returns (train_df, val_df, label2id, id2label), each with `text` +
-    integer `labels` columns.
-    """
+    
     full = load_prepared()
     labels, label2id, id2label = get_label_maps(full, target)
 

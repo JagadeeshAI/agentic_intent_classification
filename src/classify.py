@@ -1,16 +1,4 @@
-"""Intent classification on Banking77 — compares a BASELINE (TF-IDF +
-classical classifiers) against a STRONGER model (SBERT sentence embeddings
-+ LogisticRegression), per the assignment's requirement of >=2 compared
-models. Saves classification reports, confusion matrices, and a summary
-comparison table to results/. Persists the single best pipeline overall
-to checkpoint/ for explainableAI.py / agent.py to load.
 
-Run from the project root:
-    python -m src.classify        (or let app.py call train() automatically)
-
-Requirements:
-    pip install scikit-learn joblib sentence-transformers matplotlib
-"""
 import os
 import json
 
@@ -21,11 +9,6 @@ CKPT_DIR = "./checkpoint"
 
 
 class SBERTEncoder(BaseEstimator, TransformerMixin):
-    """Wraps a sentence-transformers model as an sklearn-compatible
-    transformer, so it can sit inside a Pipeline like TfidfVectorizer does.
-    Defined at module level (not inside train()) so joblib can unpickle a
-    saved SBERT pipeline via `src.classify.SBERTEncoder` WITHOUT triggering
-    a training run — importing this module must stay side-effect free."""
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
         self.model_name = model_name
         self._model = None
@@ -45,9 +28,6 @@ class SBERTEncoder(BaseEstimator, TransformerMixin):
 
 
 def train():
-    """Full train/compare/persist run. Only executes when called explicitly
-    (by app.py on a cache miss, or via `python -m src.classify`) — never on
-    import."""
     import joblib
     import numpy as np
     import pandas as pd
@@ -89,7 +69,6 @@ def train():
         "stronger_sbert_logreg": Pipeline([("features", SBERTEncoder()), ("clf", LogisticRegression(max_iter=1000))]),
     }
 
-    # --- 3. Train + evaluate each, saving per-model artifacts to results/. ---
     summary_rows = []
     best_name, best_val_acc, best_pipe = None, -1.0, None
 
